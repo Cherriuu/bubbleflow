@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react'
+import BatchForm from './components/BatchForm';
 
 function App() {
 
-  const [data, setData] = useState([{}])
+  const [inventory, setInventory] = useState([])
 
   useEffect(() => {
     fetch("http://localhost:5001/inventory").then(
       res => res.json()
     ).then(
       data => {
-        setData(data)
+        setInventory(data)
         console.log(data)
       }
     )
@@ -20,12 +21,15 @@ function App() {
     <div>
       <h1>BubbleFlow</h1>
       <h2>Inventory</h2>
-      {data.map(item => (
+
+      {inventory.map(item => (
         <div key={item.id}>
           <p>{item.name}</p>
           <p>{item.quantity}</p>
       </div>
       ))}
+
+      <BatchForm inventory={inventory}/>
     </div>
   );
 
