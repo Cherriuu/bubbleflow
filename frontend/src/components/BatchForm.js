@@ -4,6 +4,7 @@ function Batchform({ inventory, onBatchLogged }) {
     const[ingredientID, setIngredientID] = useState('');
     const[liters, setLiters] = useState('');
     const[message, setMessage] = useState('');
+    const[boba, setBoba] = useState('');
 
     const logBatch = () => {
         fetch("http://localhost:5001/inventory/batch", {
@@ -19,6 +20,19 @@ function Batchform({ inventory, onBatchLogged }) {
         .catch(error => console.error('error:', error))
     }
 
+    const logBoba = () => {
+        fetch("http://localhost:5001/inventory/boba", {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                bags: parseFloat(boba),
+                ingredient_id: parseInt(ingredientID)
+            })
+        })
+        .then(res => res.json())
+        .then(data => console.log('success:', data))
+        .catch(error => console.error('error', error))
+    }
 
     return (
         <div>
@@ -31,10 +45,12 @@ function Batchform({ inventory, onBatchLogged }) {
              </select>
              <input
              type = "number"
-             placeholder = "litersMade"
-             onChange ={e => setLiters(e.target.value)}
+             placeholder={parseInt(ingredientID) === 6 ? "Bags made": "Liters made"}
+             onChange={e => parseInt(ingredientID) === 6 ? setBoba(e.target.value) : setLiters(e.target.value)}
              />
-        <button onClick={logBatch}>Submit Batch</button>
+
+        <button onClick={parseInt(ingredientID) === 6 ? logBoba : logBatch}></button>
+
         </div>
 
     );
