@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react'
-import BatchForm from './components/BatchForm';
+import Navbar from './components/Navbar';
+import InventoryItem from './components/InventoryItem';
+import Batchform from './components/BatchForm';
+import OrderForm from './components/OrderForm';
 
 function App() {
 
   const [inventory, setInventory] = useState([])
 
-  useEffect(() => {
+  const fetchInventory = () => {
     fetch("http://localhost:5001/inventory").then(
       res => res.json()
     ).then(
@@ -14,22 +17,24 @@ function App() {
         console.log(data)
       }
     )
+  }
+
+  useEffect(() => {
+    fetchInventory()
   }, [])
 
 
   return (
     <div>
-      <h1>BubbleFlow</h1>
+      <Navbar />
       <h2>Inventory</h2>
 
       {inventory.map(item => (
-        <div key={item.id}>
-          <p>{item.name}</p>
-          <p>{item.quantity}</p>
-      </div>
+        <InventoryItem key={item.id} item={item} />
       ))}
 
-      <BatchForm inventory={inventory}/>
+      <Batchform inventory={inventory} onBatchLogged={fetchInventory}/>
+      <OrderForm inventory={inventory} onOrderLogged={fetchInventory}/>
     </div>
   );
 

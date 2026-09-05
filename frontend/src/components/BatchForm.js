@@ -1,10 +1,10 @@
-import { useState} from 'react'
+import { useState } from 'react';
 
 function Batchform({ inventory, onBatchLogged }) {
-    const[ingredientID, setIngredientID] = useState('');
-    const[liters, setLiters] = useState('');
-    const[message, setMessage] = useState('');
-    const[boba, setBoba] = useState('');
+    const [ingredientID, setIngredientID] = useState('');
+    const [liters, setLiters] = useState('');
+    const [boba, setBoba] = useState('');
+    const [message, setMessage] = useState('');
 
     const logBatch = () => {
         fetch("http://localhost:5001/inventory/batch", {
@@ -16,7 +16,12 @@ function Batchform({ inventory, onBatchLogged }) {
             })
         })
         .then(res => res.json())
-        .then(data => console.log('success:', data))
+        .then(data => {
+            console.log('success:', data);
+            setMessage(data.message);
+            setLiters('');
+            onBatchLogged();
+        })
         .catch(error => console.error('error:', error))
     }
 
@@ -30,29 +35,37 @@ function Batchform({ inventory, onBatchLogged }) {
             })
         })
         .then(res => res.json())
-        .then(data => console.log('success:', data))
+        .then(data => {
+            console.log('success:', data);
+            setMessage(data.message);
+            setBoba('');
+            onBatchLogged();
+        })
         .catch(error => console.error('error', error))
     }
 
     return (
-        <div>
+        <div className="card">
              <h1>Log Batch</h1>
-             <select onChange={e => setIngredientID(e.target.value)}>
-                <option key ="default" value ="">Select Ingredient</option>
+             <select value={ingredientID} onChange={e => setIngredientID(e.target.value)}>
+                <option key="default" value="">Select Ingredient</option>
                 {inventory.map(item => (
                     <option key={item.id} value={item.id}>{item.name}</option>
                 ))}
              </select>
              <input
-             type = "number"
-             placeholder={parseInt(ingredientID) === 6 ? "Bags made": "Liters made"}
-             onChange={e => parseInt(ingredientID) === 6 ? setBoba(e.target.value) : setLiters(e.target.value)}
+                type="number"
+                placeholder={parseInt(ingredientID) === 6 ? "Bags made" : "Liters made"}
+                value={parseInt(ingredientID) === 6 ? boba : liters}
+                onChange={e => parseInt(ingredientID) === 6 ? setBoba(e.target.value) : setLiters(e.target.value)}
              />
 
-        <button onClick={parseInt(ingredientID) === 6 ? logBoba : logBatch}></button>
+            <button onClick={parseInt(ingredientID) === 6 ? logBoba : logBatch}>
+                Log It
+            </button>
 
+            {message && <p>{message}</p>}
         </div>
-
     );
 }
 export default Batchform;
